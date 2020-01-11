@@ -1,0 +1,162 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Sample App API swagger documentation",
+        "description": "This is a sample API Documentation",
+        "termsOfService": "http://swagger.io/terms/",
+        "contact": {
+            "email": "apiteam@swagger.io"
+        },
+        "license": {
+            "name": "Apache 2.0",
+            "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+        },
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/icr/public/api/login": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create list of users with given input array",
+                "operationId": "createUsersWithListInput",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        },
+        "/icr/public/api/auth/user": {
+            "get": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Auth User Login",
+                "description": "Auth User Login",
+                "operationId": "auth",
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/icr/public/api/user/getUserById": {
+            "get": {
+                "tags": [
+                    "User"
+                ],
+                "summary": "Auth User Login",
+                "description": "ambil data user dari id",
+                "operationId": "user",
+                "parameters": [
+                    {
+                        "name": "id",
+                        "in": "query",
+                        "schema": {
+                            "type": "int"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/icr/public/api/menu/getMenuTree": {
+            "get": {
+                "tags": [
+                    "Menu"
+                ],
+                "summary": "Get User Menu",
+                "description": "Menutree untuk navbar",
+                "operationId": "menu",
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                },
+                "security": [
+                    {
+                        "bearerAuth": []
+                    }
+                ]
+            }
+        },
+        "/icr/public/api/menu/saveMenu": {
+            "post": {
+                "tags": [
+                    "Auth"
+                ],
+                "summary": "Create list of users with given input array",
+                "operationId": "createUsersWithListInput",
+                "parameters": [
+                    {
+                        "name": "username",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    },
+                    {
+                        "name": "password",
+                        "in": "query",
+                        "schema": {
+                            "type": "string"
+                        }
+                    }
+                ],
+                "responses": {
+                    "default": {
+                        "description": "successful operation"
+                    }
+                }
+            }
+        }
+    },
+    "components": {
+        "securitySchemes": {
+            "bearerAuth": {
+                "type": "http",
+                "bearerFormat": "JWT",
+                "scheme": "bearer"
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "Londry",
+            "description": "API LONDRY"
+        }
+    ]
+}
