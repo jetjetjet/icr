@@ -12,10 +12,10 @@ class API
      */
     public function handle($request, Closure $next)
     {
-        $response = $next($request);
-        $response->header('Access-Control-Allow-Headers', 'Origin, Content-Type, Content-Range, Content-Disposition, Content-Description, X-Auth-Token');
-        $response->header('Access-Control-Allow-Origin', '*');
-        //add more headers here
-        return $response;
+        return $next($request)
+        ->header('Access-Control-Allow-Origin', '*')
+        ->header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
+        ->header('Access-Control-Allow-Headers',' Origin, Content-Type, Accept, Authorization, X-Request-With')
+        ->header('Access-Control-Allow-Credentials',' true');
     }
 }
