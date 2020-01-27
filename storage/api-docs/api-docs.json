@@ -23,14 +23,14 @@
                 "operationId": "createUsersWithListInput",
                 "parameters": [
                     {
-                        "name": "username",
+                        "name": "user_name",
                         "in": "query",
                         "schema": {
                             "type": "string"
                         }
                     },
                     {
-                        "name": "password",
+                        "name": "user_password",
                         "in": "query",
                         "schema": {
                             "type": "string"

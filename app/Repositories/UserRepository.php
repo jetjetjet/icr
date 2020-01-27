@@ -10,7 +10,8 @@ use Auth;
 
 class UserRepository
 {
-    public static function getAllUsers(){
+    public static function getAllUsers()
+    {
         $q = DB::table('user')
             ->where('user_active', '1')
             ->orderBy('user_id')
@@ -22,6 +23,30 @@ class UserRepository
                 ,'user_phone'
                 , 'user_last_login')
             ->paginate(10);
+        return $q;
+    }
+
+    public static function getUserById($id)
+    {
+        $q = DB::table('user')
+            ->join('role', 'user_role_id', 'role_id')
+            ->join('user as cu', 'cu.user_id', 'user_created_user_id')
+            ->leftJoin('user as mu', 'mu.user_id', 'user_modified_user_id')
+            ->where('user_active', '1')
+            ->where('user_id', $id)
+            ->select('user_id'
+                ,'user_name'
+                ,'role.role_name as user_role_name'
+                ,'user_role_id'
+                ,'user_fullname'
+                ,'user_phone'
+                ,'user_last_login'
+                ,'cu.user_name as user_created_name'
+                ,'user_created_date'
+                ,'mu.user_name as user_modified_name'
+                ,'user_modified_date'
+            )
+            ->first();
         return $q;
     }
 
@@ -56,7 +81,8 @@ class UserRepository
         return $result;
     }
 
-    public static function getById($id){
+    public static function getById($id)
+    {
         $modelDb = DB::table('user')
             ->where('user_active','1')
             ->where('user_id',$id)
@@ -64,26 +90,30 @@ class UserRepository
                 'user.*',
             )->first();
 
-        $model = self::map($modelDb);
-
-        return $model;
+        return $modelDb;
     }
 
-    public static function map($db)
+    public function deleteUserById($id, $userLoginId)
     {
-        $ui = new \stdClass();
-        if (!isset($db)){
-            $db = new \stdClass();           
+        $result = array('success' => false, 'errorMessages' => array());
+        $params = array(
+            $id,
+            $userLoginId 
+        );
+        
+        $paramsQuery = implode(',', array_map(function ($val){ return '?'; }, $params));
+        $resultRow = DB::selectOne('select * from user_delete(' . $paramsQuery . ')', $params);
+        
+        if (empty($resultRow)){
+            array_push($result['errorMessages'], trans('messages.errorAssert'));
+        } else {
+            if (!empty($resultRow->errorcode)){
+                array_push($result['errorMessages'], $resultRow->errorcode);
+            } else {
+                $result['success'] = true;
+            } 
         }
-
-        $ui->user_id = isset($db->user_id) ? $db->user_id : 0;
-        $ui->user_name = isset($db->user_name) ? $db->user_name : null;
-        $ui->user_fullname = isset($db->user_fullname) ? $db->user_fullname : null;
-        $ui->user_address = isset($db->user_addres) ? $db->user_address : null;
-        $ui->user_phone = isset($db->user_phone) ? $db->user_phone : null;
-
-        $ui->userlastlogin = isset($db->user_last_login) ? $db->user_last_login : null;
-
-        return $ui;
+        return $result;
     }
+
 }

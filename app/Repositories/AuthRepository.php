@@ -61,7 +61,6 @@ class AuthRepository
             ->select(
                 'user.*',
             )->first();
-
         $model = self::map($modelDb);
 
         return $model;
@@ -74,9 +73,10 @@ class AuthRepository
             $db = new \stdClass();           
         }
 
-        $ui->user_id = isset($db->user_id) ? $db->user_id : 0;
-        $ui->user_password = isset($db->user_password) ? $db->user_password : null;
-        $ui->user_name = isset($db->user_name) ? $db->user_name : null;
+        $ui->id = isset($db->user_id) ? $db->user_id : 0;
+        $ui->roleid = isset($db->user_role_id) ? $db->user_role_id : 0;
+        $ui->password = isset($db->user_password) ? $db->user_password : null;
+        $ui->username = isset($db->user_name) ? $db->user_name : null;
 
         return $ui;
     }

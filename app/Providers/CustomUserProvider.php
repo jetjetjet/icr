@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Contracts\Auth\UserProvider;
+use JWTAuth;
 
 use Illuminate\Support\Facades\Hash;
 use App\User;
@@ -15,7 +16,7 @@ use DB;
 class CustomUserProvider implements UserProvider{
     public function retrieveById($identifier)
     {
-        $user = AuthRepository::get(session('userId'));
+        $user = AuthRepository::get($identifier);
         return $user === null ? null : new User((array)$user);
     }
 

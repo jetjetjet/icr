@@ -10,7 +10,7 @@ class User extends Authenticatable implements JWTSubject
 {
     protected $attributes = [];
 
-    protected $hidden = ['user_password', 'createdUserName', 'createdDate', 'modifiedUserName', 'modifiedDate'];
+    //protected $hidden = ['user_password', 'createdUserName', 'createdDate', 'modifiedUserName', 'modifiedDate'];
 
     public function __construct(array $attributes)
     {
@@ -24,17 +24,27 @@ class User extends Authenticatable implements JWTSubject
 
     public function getAuthIdentifier()
     {
-        return $this->attributes['user_id'];
+        return $this->attributes['id'];
+    }
+
+    public function getUserName()
+    {
+        return $this->attributes['username'];
+    }
+
+    public function getRoleId()
+    {
+        return $this->attributes['roleid'];
     }
 
     public function getAuthIdentifierName()
     {
-        return 'user_id';
+        return 'id';
     }
 
     public function getAuthPassword()
     {
-        return $this->attributes['user_password'];
+        return $this->attributes['password'];
     }
 
     /**

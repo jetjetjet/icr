@@ -1,7 +1,8 @@
 <?php
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Repositories\LoginRepository;
+use App\Repositories\AuthRepository;
+use App\Repositories\RoleRepository;
 use JWTAuth;
 use JWTAuthException;
 
@@ -24,10 +25,14 @@ class AuthController extends Controller
             return response()->json(['error' => 'could_not_create_token'], 500);
         }
         $userId = auth('api')->user()->getAuthIdentifier();
-        session(['userId' => $userId]);
+        $userRoleId = auth('api')->user()->getRoleId();
+        $userRole = RoleRepository::getRoleName($userRoleId);
         $result = array(
             'token'=>compact('token')['token'],
             'user_id' => $userId,
+            'user_name' => auth('api')->user()->getUserName(),
+            'role_id' => $userRoleId,
+            'role_name' => $userRole->role_name,
             'login' => true
         );
         
@@ -47,10 +52,18 @@ class AuthController extends Controller
         } catch (Tymon\JWTAuth\Exceptions\JWTException $e) {
             return response()->json(['token_absent'], $e->getStatusCode());
         }
+
         $result = array(
-            'user' => array('userId' => auth('api')->user()->getAuthIdentifier(),
-            'login' => true)
+            'userId' => auth('api')->user()->getAuthIdentifier(),
+			'user_name' => auth('api')->user()->getUserName(),
+            'role_id' => auth('api')->user()->getRoleId(),
+            'login' => true
         );
         return response()->json($result, 200);
+    }
+
+    public function logOut(Request $request)
+    {
+        JWTAuth::invalidate($token);
     }
 }

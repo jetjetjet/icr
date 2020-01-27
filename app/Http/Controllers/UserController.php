@@ -18,7 +18,8 @@ class UserController extends Controller
     private $httpCode;
     private $statusCode;
 
-    public function getAllUsers(){
+    public function getAllUsers()
+    {
         $data = UserRepository::getAllUsers();
         
         $data->success = $data != null  ? true : false;
@@ -27,9 +28,10 @@ class UserController extends Controller
         return response()->json($data);
     }
 
-    public function getUserById($user_id){
+    public function getUserById($user_id)
+    {
         if ($id){
-            $data = UserRepository::getById($user_id);
+            $data = UserRepository::getUserById($user_id);
             $success = $data != null  ? true : false;
             $stateCode = $data != null ? "SUCCESS" : "FAILED";
 
@@ -92,6 +94,23 @@ class UserController extends Controller
                 'success' => $success,
                 'messages' => $messages,
                 'data' => $inputs
+            )
+        );
+    }
+
+    public function deleteUser($user_id)
+    {
+        $results = RoleRepository::deleteUserById($user_id, session('userId'));
+        $success = $results['success'] ? true : false;
+        $messages = $results['errorMessages'];
+        $stateCode = $results['success'] ? "SUCCESS" : "FAILED";
+
+        return response()->json(
+            array(
+                'state_code' => $stateCode,
+                'success' => $success,
+                'messages' => $messages,
+                'data' => $results
             )
         );
     }

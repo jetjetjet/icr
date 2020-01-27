@@ -14,7 +14,44 @@ class MenuController extends Controller
     private $httpCode;
     private $statusCode;
 
-    public function postSaveMenu(Request $request){
+    public function getAllMenu(){
+        $data = MenuRepository::getAllMenu();
+        
+        $data->success = $data != null  ? true : false;
+        $data->state_code = $data != null ? "SUCCESS" : "FAILED";
+
+        return response()->json($data);
+    }
+
+    public function getMenuById($menu_id)
+    {
+        if ($menu_id){
+            $data = MenuRepository::getMenuById($menu_id);
+            $success = $data != null  ? true : false;
+            $stateCode = $data != null ? "SUCCESS" : "FAILED";
+
+            return response()->json(
+                array(
+                    'state_code' => $stateCode ,
+                    'success' => $success,
+                    'messages' => null,
+                    'data' => $data
+                )
+            );
+        } else {
+            return response()->json(
+                array(
+                    'state_code' => "FAILED",
+                    'success' => false,
+                    'messages' => $messages,
+                    'data' => null
+                )
+            );
+        }
+    }
+
+    public function postSaveMenu(Request $request)
+    {
         // Validation rules.
 		$rules = array(
             'menu_name' => 'required|max:30',
@@ -28,12 +65,12 @@ class MenuController extends Controller
         $validator = Validator::make($inputs, $rules);
         if ($validator->fails()) {
             $success = false;
-            $messages = $validator;
+            $messages = $validator->messages()->get('*');
             $stateCode = "FAILED";
         } else {
             // Executes to Repo and DB
-            $results = MenuRepository::save($inputs, 1);
-            $inputs['user_id'] = $results['id'];
+            $results = MenuRepository::save($inputs, session('userId'));
+            $inputs['menu_id'] = $results['menu_id'];
             $success = $results['success'] ? true : false;
             $messages = $results['errorMessages'];
             $stateCode = $results['success'] ? "SUCCESS" : "FAILED";
@@ -49,7 +86,8 @@ class MenuController extends Controller
         );
     }
 
-    public function getUserMenu(){
+    public function getUserMenu()
+    {
         $id = session('userId');
 
         if ($id){
@@ -78,5 +116,21 @@ class MenuController extends Controller
             );
         }
 
+    }
+
+    public function deleteMenu($menu_id){
+        $results = RoleRepository::deleteMenuById($menu_id, session('userId'));
+        $success = $results['success'] ? true : false;
+        $messages = $results['errorMessages'];
+        $stateCode = $results['success'] ? "SUCCESS" : "FAILED";
+
+        return response()->json(
+            array(
+                'state_code' => $stateCode,
+                'success' => $success,
+                'messages' => $messages,
+                'data' => $results
+            )
+        );
     }
 }

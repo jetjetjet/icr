@@ -1,12 +1,12 @@
 <?php
-
 namespace App\Http\Controllers;
 use Illuminate\Http\Request;
-use App\Repositories\RoleRepository;
+use App\Repositories\CategoryRepository;
 
+use Session;
 use Validator;
 
-class RoleController extends Controller
+class CategoryController extends Controller
 {
     private $success;
     private $messages;
@@ -14,51 +14,26 @@ class RoleController extends Controller
     private $httpCode;
     private $statusCode;
 
-    public function getAllRole(Request $request)
+    public function getAllCategory()
     {
-        $data = new \stdClass();
-        //$filter = $this->mapFilter($request);
-        $results = RoleRepository::getAllRole();
+        $data = CategoryRepository::getAllCategory();
+        
         $data->success = $data != null  ? true : false;
         $data->state_code = $data != null ? "SUCCESS" : "FAILED";
-        //$data->totalCount = $results->count;
-        $data->data = $results->data;
 
         return response()->json($data);
     }
 
-    private function mapFilter($req){
-        $filter = new \stdClass();
-
-        $filter->limit = $req->input('take') !== null ? $req->input('take') : 10 ;
-        $filter->offset = $req->input('skip') !== null ? $req->input('skip') : 0;
-
-        // Sort columns.
-        $filter->sortColumns = array();
-        $orderColumns = $req->input('sort') != null ? $req->input('sort') : array();
-        if ($orderColumns){
-            $orderParse = json_decode($orderColumns, true);
-            $filterColumn = new \stdClass();
-            $filterColumn->column = $orderParse[0]['selector'];
-            $filterColumn->order = $orderParse[0]['desc'] == true ? 'DESC' : 'ASC';
-            array_push($filter->sortColumns, $filterColumn);
-        }
-
-        //Search Column
-        $filter->search = $req->input('filter') != null ? json_decode($req->input('filter'), true) : array();
-        
-        return $filter;
-    }
-
-    public function getRoleById($role_id){
-        if ($role_id){
-            $data = RoleRepository::getRoleById($role_id);
+    public function getCategoryById($category_id)
+    {
+        if ($category_id){
+            $data = CategoryRepository::getCategoryById($category_id);
             $success = $data != null  ? true : false;
             $stateCode = $data != null ? "SUCCESS" : "FAILED";
 
             return response()->json(
                 array(
-                    'state_code' => $stateCode,
+                    'state_code' => $stateCode ,
                     'success' => $success,
                     'messages' => null,
                     'data' => $data
@@ -76,12 +51,13 @@ class RoleController extends Controller
         }
     }
 
-    public function saveRole(Request $request)
+    public function postSaveCategory(Request $request)
     {
         // Validation rules.
 		$rules = array(
-            'role_name' => 'max:25',
-            'role_description' => 'max:200',
+            'ctg_name' => 'required|max:50',
+            'ctg_detail' => 'max:200',
+            'ctg_price' => 'required',
         );
         
         $inputs = $request->all();
@@ -94,8 +70,8 @@ class RoleController extends Controller
             $stateCode = "FAILED";
         } else {
             // Executes to Repo and DB
-            $results = RoleRepository::save($inputs, auth('api')->user()->getAuthIdentifier());
-            $inputs['role_id'] = $results['id'];
+            $results = CategoryRepository::save($inputs, session('userId'));
+            $inputs['ctg_id'] = $results['ctg_id'];
             $success = $results['success'] ? true : false;
             $messages = $results['errorMessages'];
             $stateCode = $results['success'] ? "SUCCESS" : "FAILED";
@@ -111,9 +87,8 @@ class RoleController extends Controller
         );
     }
 
-    public function deleteRole($role_id)
-    {
-        $results = RoleRepository::deleteById($role_id, auth('api')->user()->getAuthIdentifier());
+    public function deleteCategory($category_id){
+        $results = CustomerRepository::deleteCategoryById($category_id, session('userId'));
         $success = $results['success'] ? true : false;
         $messages = $results['errorMessages'];
         $stateCode = $results['success'] ? "SUCCESS" : "FAILED";
@@ -127,4 +102,5 @@ class RoleController extends Controller
             )
         );
     }
+
 }

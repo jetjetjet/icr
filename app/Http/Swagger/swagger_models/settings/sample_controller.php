@@ -20,14 +20,14 @@ class SampleController //This is a sample laravel Controller
      *         description="successful operation"
      *     ),
      *     @OA\Parameter(
-     *         name="username",
+     *         name="user_name",
      *         in="query",
      *         @OA\Schema(
      *             type="string",
      *         )
      *     ),
      *     @OA\Parameter(
-     *         name="password",
+     *         name="user_password",
      *         in="query",
      *         @OA\Schema(
      *             type="string",
@@ -61,6 +61,30 @@ class SampleController //This is a sample laravel Controller
     /////////////// GET USER BY ID
     /**
      * @OA\GET(
+     *     path="/icr/public/api/user/getAll",
+     *     tags={"User"},
+     *     summary="get all user",
+     *     description="get All User",
+     *     operationId="user",
+     *     @OA\Response(
+     *         response="default",
+     *         description="successful operation"
+     *     ),
+     *     @OA\Parameter(
+     *         name="id",
+     *         in="query",
+     *         @OA\Schema(
+     *             type="int",
+     *         )
+     *     ),
+     *     security={
+     *         {"bearerAuth": {}}
+     *     }
+     * )
+     */
+
+    /**
+     * @OA\GET(
      *     path="/icr/public/api/user/getUserById",
      *     tags={"User"},
      *     summary="Auth User Login",
@@ -80,6 +104,33 @@ class SampleController //This is a sample laravel Controller
      *     security={
      *         {"bearerAuth": {}}
      *     }
+     * )
+     */
+
+     /**
+     * @OA\POST(
+     *     path="/icr/public/api/user/saveUser",
+     *     tags={"Auth"},
+     *     summary="Simpan User",
+     *     operationId="userid",
+     *     @OA\Response(
+     *         response="default",
+     *         description="successful operation"
+     *     ),
+     *     @OA\Parameter(
+     *         name="user_name",
+     *         in="query",
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
+     *     @OA\Parameter(
+     *         name="user_password",
+     *         in="query",
+     *         @OA\Schema(
+     *             type="string",
+     *         )
+     *     ),
      * )
      */
 

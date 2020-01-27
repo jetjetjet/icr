@@ -9,6 +9,37 @@ use Auth;
 
 class MenuRepository {
 
+    public static function getAllMenu()
+    {
+        $q = DB::table('menu')
+            ->where('menu_active', '1')
+            ->select('*')
+            ->paginate(10);
+
+        return $q;
+    }
+
+    public static function getMenuById($id)
+    {
+        $q = DB::table('menu')
+            ->join('user as cu', 'cu.userid', 'menu_created_user_id')
+            ->join('user as mu', 'mu.userid', 'menu_modified_user_id')
+            ->where('menu_active', '1')
+            ->select('menu_id', 
+                'menu_is_parent'
+                ,'menu_parent_id'
+                ,'menu_name'
+                ,'menu_url'
+                ,'menu_icon'
+                ,'cu.user_name as created_user_name'
+                ,'menu_created_date'
+                ,'mu.user_name as modified_user_name'
+                ,'menu_modified_date')
+            ->first();
+
+        return $q;
+    }
+
     public static function save($inputs, $userLoginId)
     {
         $result = array('success' => false, 'errorMessages' => array(),'menu_id' =>null);
@@ -35,6 +66,29 @@ class MenuRepository {
         }
 
         $result['menu_id'] = $resultRow->insert_id ?: $inputs['menu_id'];
+        return $result;
+    }
+
+    public function deleteMenuById($id, $userLoginId)
+    {
+        $result = array('success' => false, 'errorMessages' => array());
+        $params = array(
+            $id,
+            $userLoginId 
+        );
+        
+        $paramsQuery = implode(',', array_map(function ($val){ return '?'; }, $params));
+        $resultRow = DB::selectOne('select * from menu_delete(' . $paramsQuery . ')', $params);
+        
+        if (empty($resultRow)){
+            array_push($result['errorMessages'], trans('messages.errorAssert'));
+        } else {
+            if (!empty($resultRow->errorcode)){
+                array_push($result['errorMessages'], $resultRow->errorcode);
+            } else {
+                $result['success'] = true;
+            } 
+        }
         return $result;
     }
 
@@ -90,4 +144,5 @@ class MenuRepository {
         
         return $ui;
     }
+
 }
